@@ -1,0 +1,7 @@
+{
+	"require": {
+		"amazonwebservices/aws-sdk-for-php": ">=1.5.0",
+		"inori/twitteroauth": "dev-master",
+		"rediska/rediska": "dev-master"
+	}
+}
