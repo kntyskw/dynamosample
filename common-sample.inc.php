@@ -1,8 +1,5 @@
 <?php 
 
-$twitterConsumerKey = 'Your Twitter Consumer Key';
-$twitterConsumerSecret = 'Your Twitter Consumer Secret';
-
 $myUrl = 'http://your_domain/';
 $myWsUrl = 'http://your_websocket_domain/';
 
