@@ -1,24 +1,13 @@
-<<<<<<< HEAD
 /**
  * Module dependencies.
  */
 var config = require('./config');
 
 var io = require('socket.io').listen(config.ws_port);
-=======
-
-/**
- * Module dependencies.
- */
-
-var io = require('socket.io').listen(10080);
->>>>>>> e25897c5ed4f315e3e4d4ace6d20cf65233c4d47
 var sys = require('util');
 var OAuth= require('oauth').OAuth;
 var dynode = require('dynode');
 var redis      = require('redis');
-
-<<<<<<< HEAD
 
 var consumer_key = config.twitter_consumer_key;
 var consumer_secret = config.twitter_consumer_secret;
@@ -32,17 +21,6 @@ var dynamodb = new dynode.Client({
 });
 
 var publisher = redis.createClient(redis_port, redis_host);
-=======
-var consumer_key = '';
-var consumer_secret = '';
-
-var dynamodb = new dynode.Client({
-	'accessKeyId': "",
-	'secretAccessKey': ""
-});
-
-var publisher = redis.createClient(6379, 'localhost');
->>>>>>> e25897c5ed4f315e3e4d4ace6d20cf65233c4d47
 
 oa= new OAuth("https://twitter.com/oauth/request_token",
                  "https://twitter.com/oauth/access_token", 
@@ -50,33 +28,6 @@ oa= new OAuth("https://twitter.com/oauth/request_token",
                  "1.0A", "http://localhost:3000/oauth/callback", "HMAC-SHA1");
 
 
-<<<<<<< HEAD
-=======
-var app = express();
-
-app.configure(function(){
-  app.set('port', process.env.PORT || 3000);
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'jade');
-  app.use(express.favicon());
-  app.use(express.logger('dev'));
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'public')));
-});
-
-app.configure('development', function(){
-  app.use(express.errorHandler());
-});
-
-app.get('/', routes.index);
-
-http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
-});
-
->>>>>>> e25897c5ed4f315e3e4d4ace6d20cf65233c4d47
 var twitterStreamClients = {};
 var publicStreamClients = {};
 var pubStreamUrl = "https://stream.twitter.com/1/statuses/sample.json";
@@ -86,20 +37,11 @@ io.sockets.on('connection', function(socket){
 	socket.emit('who', {});
 	socket.on('i am', function (userId){
 		console.log('subscribing to user update channel ' + userId);
-<<<<<<< HEAD
  		socket.subscriber = redis.createClient(redis_port, redis_host);
-=======
- 		socket.subscriber = redis.createClient(6379, 'redis.yasukawa.org');
->>>>>>> e25897c5ed4f315e3e4d4ace6d20cf65233c4d47
 		socket.subscriber.subscribe(userId);
 		socket.subscriber.on("message", function(channel, message) {
 			socket.emit('feed', JSON.parse(message));
 		});
-<<<<<<< HEAD
-=======
-		var req = http.createClient(3000, 'localhost').request('POST', '/subscription/' + userId);
-		req.end();
->>>>>>> e25897c5ed4f315e3e4d4ace6d20cf65233c4d47
 	});
 	socket.on('setPubStreamRate', function (args){
 		console.log('setting pubstream rate for user' + args.user);
@@ -123,41 +65,11 @@ io.sockets.on('connection', function(socket){
 	});
 });
 
-
-<<<<<<< HEAD
 var TwitterStreamClient = function(user, url){
 	this.user = user;
 	this.url = url;
 	this.access_token = config.twitter_access_token;
 	this.access_token_secret = config.twitter_access_token_secret;
-=======
-app.get('/subscription/:user', function(req, res){
-	if(typeof(twitterStreamClients[req.params.user]) != 'undefined'){
-		res.send(req.params.user);
-	} else {
-		res.send(404, "No subscription");
-	}
-});
-
-app.post('/subscription/:user', function(req, res){
-	var user = req.params.user;
-	if(twitterStreamClients[user]){
-		console.log("Twitter stream client for " + user + " already running");
-		res.send(204);
-		return;
-	}
-	console.log("Starting Twitter stream client for " + user);
-	twitterStreamClients[user] = new TwitterStreamClient(user, userStreamUrl);
-	twitterStreamClients[user].start.call(twitterStreamClients[user]);
-	res.send(201);
-});
-
-var TwitterStreamClient = function(user, url){
-	this.user = user;
-	this.url = url;
-	this.access_token = null;
-	this.access_token_secret = null;
->>>>>>> e25897c5ed4f315e3e4d4ace6d20cf65233c4d47
 	this.mod = 1;
 	this.count = 0;
 	this.streamHandler = null;
