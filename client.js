@@ -4,10 +4,12 @@ function init(){
 	doWorkaroundForUISliders();
 	
 	// Gets 10 feeds since 5 minutes ago
-	getFeeds(10, new Date().getTime() / 1000 - 300);
+	//getFeeds(10, new Date().getTime() / 1000 - 300);
 	
 	var connection = new WSServerConnection(myUserId, myWsUrl);
 	
+	$('#pubStreamRatio').val(5);
+
 	$('#pubStreamRatio').on("stop", function(event, ui){
 		connection.setPublicStreamRate.call(connection, $(this).val());
 	});
@@ -28,6 +30,7 @@ var WSServerConnection = function (userId, serverUrl){
 	this.socket.on('who', function(message){
 		console.debug("My user id is " + connection.userId);
 		connection.socket.emit('i am', connection.userId);
+		connection.setPublicStreamRate($('#pubStreamRatio').val());
 	});
 
 	this.socket.on('feed', function(feed){
