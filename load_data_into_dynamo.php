@@ -5,7 +5,10 @@
 require_once dirname(__FILE__) . '/vendor/amazonwebservices/aws-sdk-for-php/sdk.class.php';
 
 // Instantiate the class
-$dynamodb = new AmazonDynamoDB();
+$dynamodb = new AmazonDynamoDB(array(
+		'key' => getenv('AWS_ACCESS_KEY'),
+		'secret' => getenv('AWS_SECRET_KEY'),
+		));
 
 ####################################################################
 # Setup some local variables for dates

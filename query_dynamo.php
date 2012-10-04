@@ -5,7 +5,10 @@
 require_once dirname(__FILE__) . '/vendor/amazonwebservices/aws-sdk-for-php/sdk.class.php';
 
 // Instantiate the class.
-$dynamodb = new AmazonDynamoDB();
+$dynamodb = new AmazonDynamoDB(array(
+                'key' => getenv('AWS_ACCESS_KEY'),
+                'secret' => getenv('AWS_SECRET_KEY'),
+                ));
 
 $fourteen_days_ago = date('Y-m-d H:i:s', strtotime("-14 days"));
 	
