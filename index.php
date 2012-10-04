@@ -18,6 +18,7 @@ require_once 'common.inc.php';
 	<script type="text/javascript" src="<?php echo $myWsUrl.'socket.io/socket.io.js'?>"></script>
 	<script type="text/javascript">
  		myWsUrl = "<?php echo $myWsUrl?>";
+		myUserId = "twitterUser";
  	</script>
 	<script src="client.js"></script>
 	
