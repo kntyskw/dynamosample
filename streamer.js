@@ -165,10 +165,10 @@ function normalizeTwitterFeed(feed){
 
 function storeFeed(user, feed){
 	var writeRequests = {};
-	writeRequests[config.user_data_table] = [
+	writeRequests[config.user_feeds_table] = [
       			{put : {id: user, time: feed.time, messageId: feed.id }}
     		];
-	writeRequests[config.user_data_table] = [
+	writeRequests[config.feeds_table] = [
       			{put : feed}
     		];
 
