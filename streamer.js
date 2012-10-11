@@ -139,9 +139,7 @@ TwitterStreamClient.prototype.setRate = function(rate){
 }
 
 TwitterStreamClient.prototype.getToken = function(callback){
-	dynamodb.getItem('soag_users', this.user, {AttributesToGet: ['twitter_token', 'twitter_token_secret']}, function(error, data, meta){
-		console.log(data);
-		console.log(meta);
+	dynamodb.getItem(config.user_data_table, this.user, {AttributesToGet: ['twitter_token', 'twitter_token_secret']}, function(error, data, meta){
 		if(error == null){
 			callback(data);
 		} else {
@@ -166,16 +164,15 @@ function normalizeTwitterFeed(feed){
 }
 
 function storeFeed(user, feed){
-	var writes = {
-    		"soag_user_feeds": [
+	var writeRequests = {};
+	writeRequests[config.user_data_table] = [
       			{put : {id: user, time: feed.time, messageId: feed.id }}
-    		],
-    		"soag_feeds": [
+    		];
+	writeRequests[config.user_data_table] = [
       			{put : feed}
-    		]
-  	};
+    		];
 
-	dynamodb.batchWriteItem(writes, function(error, meta){
+	dynamodb.batchWriteItem(writeRequests, function(error, meta){
 		if(error){
 			console.error(error);
 			feed['error'] = 1;
@@ -186,9 +183,7 @@ function storeFeed(user, feed){
 }
 
 function getTwitterToken(user, callback){
-	dynamodb.getItem('soag_users', user, {AttributesToGet: ['twitter_token', 'twitter_token_secret']}, function(obj, data, meta){
-		console.log(data);
-		console.log(meta);
+	dynamodb.getItem(config.user_data_table, user, {AttributesToGet: ['twitter_token', 'twitter_token_secret']}, function(obj, data, meta){
 		if(data != null){
 			callback(data);	
 		} else {
