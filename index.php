@@ -34,6 +34,7 @@ require_once 'common.inc.php';
 	</div><!-- /header -->
 
 	<div data-role="content">	
+ 		<a href="twitter_auth.php" rel="external"><img src="https://si0.twimg.com/images/dev/buttons/sign-in-with-twitter-d.png"></img></a>
 	
         <div data-role="fieldcontain">
         	<fieldset data-role="controlgroup">
