@@ -9,7 +9,7 @@ $user_feeds_table = "USER_FEEDS_TABLE";
 $feeds_table = "FEEDS_TABLE";
 $user_data_table = "USER_DATA_TABLE";
 
-$twitterConsumerToken = "TWITTER_CONSUMER_TOKEN";
+$twitterConsumerKey = "TWITTER_CONSUMER_TOKEN";
 $twitterConsumerSecret = "TWITTER_CONSUMER_SECRET";
 
 require_once __DIR__.'/vendor/autoload.php';
