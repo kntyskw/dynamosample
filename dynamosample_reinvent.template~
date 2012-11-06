@@ -1,0 +1,590 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Intro:DynamoDB - AWS Training",
+    "Mappings": {
+        "AWSInstanceType2Arch": {
+            "c1.medium": {
+                "Arch": "64"
+            },
+            "c1.xlarge": {
+                "Arch": "64"
+            },
+            "cc1.4xlarge": {
+                "Arch": "64"
+            },
+            "m1.small": {
+                "Arch": "64"
+            },
+            "m1.medium": {
+                "Arch": "64"
+            },
+            "m1.large": {
+                "Arch": "64"
+            },
+            "m1.xlarge": {
+                "Arch": "64"
+            },
+            "m2.2xlarge": {
+                "Arch": "64"
+            },
+            "m2.4xlarge": {
+                "Arch": "64"
+            },
+            "m2.xlarge": {
+                "Arch": "64"
+            },
+            "t1.micro": {
+                "Arch": "64"
+            }
+        },
+        "AWSRegionArch2AMI": {
+            "ap-northeast-1": {
+                "32": "ami-087acb09",
+                "64": "ami-e47acbe5"
+            },
+            "ap-southeast-1": {
+                "32": "ami-b83374ea",
+                "64": "ami-be3374ec"
+            },
+            "eu-west-1": {
+                "32": "ami-fd231b89",
+                "64": "ami-f9231b8d"
+            },
+            "sa-east-1": {
+                "32": "ami-aa855bb7",
+                "64": "ami-a6855bbb"
+            },
+            "us-east-1": {
+                "32": "ami-ed65ba84",
+                "64": "ami-e565ba8c"
+            },
+            "us-west-1": {
+                "32": "ami-978cd4d2",
+                "64": "ami-e78cd4a2"
+            },
+            "us-west-2": {
+                "32": "ami-38c64a08",
+                "64": "ami-3ac64a0a"
+            }
+        }
+    },
+    "Outputs": {
+        "Instance": {
+            "Description": "DNS Name of the newly created EC2 instance",
+            "Value": {
+                "Fn::GetAtt": [
+                    "Ec2Instance",
+                    "PublicDnsName"
+                ]
+            }
+        }
+    },
+    "Parameters": {
+        "InstanceType": {
+            "Default": "t1.micro",
+            "Description": "EC2 instance type, e.g. m1.small, m1.large, etc.",
+            "Type": "String"
+        },
+        "KeyName": {
+            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the web server",
+            "Type": "String"
+        },
+	"AWSAccessKey": {
+            "Type": "String"
+        },
+        "AWSSecretAccessKey": {
+            "Type": "String"
+        },
+        "TwitterOauthConsumerKey": {
+            "Default": "",
+            "Description": "Twitter Oauth Consumer Key for sample application.",
+            "Type": "String"
+        },
+        "TwitterOauthConsumerSecret": {
+            "Default": "",
+            "Description": "Twitter Oauth Consumer secret for sample application.",
+            "Type": "String"
+        },
+        "TwitterAccessToken": {
+            "Default": "",
+            "Description": "Twitter Oauth access token for sample application.",
+            "Type": "String"
+        },
+        "TwitterAccessTokenSecret": {
+            "Default": "",
+            "Description": "Twitter Oauth access token secret for sample application.",
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "AdminUser": {
+            "Properties": {
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Action": "*",
+                                    "Effect": "Allow",
+                                    "Resource": "*"
+                                }
+                            ]
+                        },
+                        "PolicyName": "root"
+                    }
+                ]
+            },
+            "Type": "AWS::IAM::User"
+        },
+        "HostKeys": {
+            "Properties": {
+                "UserName": {
+                    "Ref": "AdminUser"
+                }
+            },
+            "Type": "AWS::IAM::AccessKey"
+        },
+        "Ec2Instance": {
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "files": {
+                            "/home/ec2-user/.aws-credentials": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "AWSAccessKeyId=",
+                                            {
+                                                "Ref": "HostKeys"
+                                            },
+                                            "\n",
+                                            "AWSSecretKey=",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "HostKeys",
+                                                    "SecretAccessKey"
+                                                ]
+                                            },
+                                            "\n"
+                                        ]
+                                    ]
+                                },
+                                "group": "ec2-user",
+                                "mode": "000600",
+                                "owner": "ec2-user"
+                            },
+                            "/root/config.js": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "var config=exports;",
+                                            "\n",
+                                            "config.aws_access_key='",
+                                            {
+                                                "Ref": "HostKeys"
+                                            },
+                                            "';\n",
+                                            "config.aws_secret_key='",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "HostKeys",
+                                                    "SecretAccessKey"
+                                                ]
+                                            },
+                                            "';\n",
+                                            "config.twitter_consumer_key='",
+                                            {
+                                                "Ref": "TwitterOauthConsumerKey"
+                                            },
+                                            "';\n",
+                                            "config.twitter_consumer_secret='",
+                                            {
+                                                "Ref": "TwitterOauthConsumerSecret"
+                                            },
+                                            "';\n",
+                                            "config.twitter_access_token='",
+                                            {
+                                                "Ref": "TwitterAccessToken"
+                                            },
+                                            "';\n",
+                                            "config.twitter_access_token_secret='",
+                                            {
+                                                "Ref": "TwitterAccessTokenSecret"
+                                            },
+                                            "';\n",
+                                            "config.user_feeds_table='",
+                                            {
+                                                "Ref": "UserFeedsTable"
+                                            },
+                                            "';\n",
+                                            "config.feeds_table='",
+                                            {
+                                                "Ref": "FeedsTable"
+                                            },
+                                            "';\n",
+                                            "config.ws_port=10080;",
+                                            "\n",
+                                            "config.redis_port=6379;",
+                                            "\n",
+                                            "config.redis_host='localhost';",
+                                            "\n"
+                                        ]
+                                    ]
+                                },
+                                "group": "root",
+                                "mode": "000600",
+                                "owner": "root"
+                            },
+                            "/home/ec2-user/credentials.json": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "{",
+                                            "\n",
+                                            "\"access-id\":\"",
+                                            {
+                                                "Ref": "HostKeys"
+                                            },
+                                            "\",",
+                                            "\n",
+                                            "\"private-key\":\"",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "HostKeys",
+                                                    "SecretAccessKey"
+                                                ]
+                                            },
+                                            "\",",
+                                            "\n",
+                                            "\"key-pair\":\"",
+                                            {
+                                                "Ref": "KeyName"
+                                            },
+                                            "\",",
+                                            "\n",
+                                            "\"key-pair-file\":\"",
+                                            {
+                                                "Fn::Join": [
+                                                    "",
+                                                    [
+                                                        "~/",
+                                                        {
+                                                            "Ref": "KeyName"
+                                                        },
+                                                        ".pem"
+                                                    ]
+                                                ]
+                                            },
+                                            "\",",
+                                            "\n",
+                                            "\"region\":\"",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            "\",",
+                                            "\n",
+                                            "}",
+                                            "\n"
+                                        ]
+                                    ]
+                                },
+                                "group": "ec2-user",
+                                "mode": "000600",
+                                "owner": "ec2-user"
+                            }
+                        },
+                        "sources": {
+                            "/usr/src": "http://redis.googlecode.com/files/redis-2.4.16.tar.gz",
+			    "/var/www/html/dynamosample": "https://github.com/kntyskw/dynamosample/tarball/master"
+                        },
+                        "packages": {
+                            "yum": {
+                                "git": [],
+                                "gcc": [],
+                                "make": [],
+                                "httpd": [],
+                                "php": [],
+                                "nodejs": [],
+                                "npm": [],
+                                "php-xml": []
+                            }
+                        },
+			"services": {
+				"sysvinit" : { 
+					"httpd" : { 
+						"enabled" : "true", 
+						"ensureRunning" : "true", 
+						"packages": { 
+							"yum" : ["httpd", "php"]
+						}
+					}
+    				} 
+			}
+                    }
+                }
+            },
+            "Properties": {
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSRegionArch2AMI",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        {
+                            "Fn::FindInMap": [
+                                "AWSInstanceType2Arch",
+                                {
+                                    "Ref": "InstanceType"
+                                },
+                                "Arch"
+                            ]
+                        }
+                    ]
+                },
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "IamInstanceProfile": {
+                    "Ref": "RootInstanceProfile"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "Ec2SecurityGroup"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash\n",
+                                "# Get Updates _Before_ CfnInit Runs\n",
+                                "#yum update -y\n",
+                                "# Helper function\n",
+                                "function error_exit \n",
+                                "{\n",
+                                "  /opt/aws/bin/cfn-signal -e 1 -r \"$1\" '",
+                                {
+                                    "Ref": "WaitHandle"
+                                },
+                                "'\n",
+                                "  exit 1\n",
+                                "}\n",
+                                "# Install nodejs repository\n",
+                                "yum -y localinstall --nogpgcheck http://nodejs.tchol.org/repocfg/amzn1/nodejs-stable-release.noarch.rpm\n",
+                                "echo 'export AWS_ACCESS_KEY=",
+                                {
+                                    "Ref": "HostKeys"
+                                },
+                                "'  >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY' >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export AWS_SECRET_ACCESS_KEY=",
+                                {
+                                    "Fn::GetAtt": [
+                                        "HostKeys",
+                                        "SecretAccessKey"
+                                    ]
+                                },
+                                "'  >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export AWS_SECRET_KEY=$AWS_SECRET_ACCESS_KEY' >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export AWS_CLOUDFORMATION_HOME=/opt/aws/apitools/cfn' >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export PATH=$AWS_CLOUDFORMATION_HOME/bin:$PATH' >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export PATH=/opt/aws/bin:$PATH' >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export AWS_CREDENTIALS_FILE=/home/ec2-user/.aws-credentials' >> /home/ec2-user/.bash_profile\n",
+                                "echo 'export AWS_CREDENTIAL_FILE=$AWS_CREDENTIALS_FILE' >> /home/ec2-user/.bash_profile\n",
+                                "# Install packages and write files in AWS::CloudFormation::Init\n",
+                                "/opt/aws/bin/cfn-init -s ",
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                " -r Ec2Instance ",
+                                "    --access-key ",
+                                {
+                                    "Ref": "HostKeys"
+                                },
+                                "    --secret-key ",
+                                {
+                                    "Fn::GetAtt": [
+                                        "HostKeys",
+                                        "SecretAccessKey"
+                                    ]
+                                },
+                                "    --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                " || error_exit 'Failed to run cfn-init'\n",
+                                "# Get Updates _After_ CfnInit Runs\n",
+                                "#yum update -y\n",
+                                "pushd /usr/src/redis-2.4.16\n",
+                                "make && make install || error_exit 'Failed to build redis'\n",
+                                "popd\n",
+                                "# Configure php\n",
+                                "cat 'date.timezone = UTC' >> /etc/php.ini\n",
+                                "ln -fs /usr/bin/nodejs /usr/bin/node\n",
+                                "# Fetches sample code and configure\n",
+                                "#pushd /var/www/html\n",
+                                "#git clone https://github.com/kntyskw/dynamosample.git\n",
+                                "WEBROOT=/var/www/html/dynamosample\n",
+                                "pushd $WEBROOT\n",
+                                "sh $WEBROOT/composer.sh\n",
+                                "#sed -e \"s/your_domain/`ec2-metadata -p | cut -f 2 -d' '`/\" common-sample.inc.php > tmp\n",
+                                "#sed -e \"s/your_websocket_domain/`ec2-metadata -p | cut -f 2 -d' '`:10080/\" tmp > common.inc.php\n",
+                                "HOSTNAME=`curl http://169.254.169.254/latest/meta-data/public-hostname`\n",
+                                "sed -e \"s/your_domain/$HOSTNAME/\" common-sample.inc.php > tmp\n",
+                                "sed -e \"s/your_websocket_domain/$HOSTNAME:10080/\" tmp > common.inc.php\n",
+                                "rm tmp\n",
+                                "popd\n",
+                                "SDKROOT=$WEBROOT/vendor/amazonwebservices/aws-sdk-for-php\n",
+                                "cp $SDKROOT/config-sample.inc.php $SDKROOT/config.inc.php\n",
+                                "chown -R ec2-user $WEBROOT\n",
+                                "#popd\n",
+                                "# Start nodejs part of the sample app\n",
+                                "pushd /root\n",
+                                "cp $WEBROOT/streamer.js ./\n",
+                                "npm install socket.io redis oauth dynode\n",
+                                "sed -i '/check to see if should retry request/c\\///' /root/node_modules/dynode/lib/dynode/client.js\n",
+                                "# Start servers\n",
+                                "/usr/local/bin/redis-server >& /var/log/redis.log&\n",
+                                "/etc/init.d/httpd start\n",
+                                "node /root/streamer.js >& /var/log/streamer.log &\n",
+                                "# All went well so signal success\n",
+                                "/opt/aws/bin/cfn-signal -e 0 -r \"cfn-int setup complete\" '",
+                                {
+                                    "Ref": "WaitHandle"
+                                },
+                                "'\n"
+                            ]
+                        ]
+                    }
+                }
+            },
+            "Type": "AWS::EC2::Instance"
+        },
+	"UserFeedsTable" : {
+             "Type" : "AWS::DynamoDB::Table",
+              "Properties" : {
+                  "KeySchema" : {
+                     "HashKeyElement": {
+                        "AttributeName" : "id",
+                        "AttributeType" : "S"
+                     },
+                     "RangeKeyElement": {
+                        "AttributeName" : "time",
+                        "AttributeType" : "N"
+                     }
+                  },
+                  "ProvisionedThroughput" : {
+                     "ReadCapacityUnits" : "5",
+                     "WriteCapacityUnits" : "5"
+                 }                             
+              }
+        },
+	"FeedsTable" : {
+             "Type" : "AWS::DynamoDB::Table",
+              "Properties" : {
+                  "KeySchema" : {
+                     "HashKeyElement": {
+                        "AttributeName" : "id",
+                        "AttributeType" : "S"
+                     }
+                  },
+                  "ProvisionedThroughput" : {
+                     "ReadCapacityUnits" : "5",
+                     "WriteCapacityUnits" : "5"
+                 }                             
+              }
+        },
+        "Ec2SecurityGroup": {
+            "Properties": {
+                "GroupDescription": "SSH access on port 80 and 22",
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "FromPort": "22",
+                        "IpProtocol": "tcp",
+                        "ToPort": "22"
+                    },
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "FromPort": "80",
+                        "IpProtocol": "tcp",
+                        "ToPort": "80"
+                    },
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "FromPort": "10080",
+                        "IpProtocol": "tcp",
+                        "ToPort": "10080"
+                    }
+                ]
+            },
+            "Type": "AWS::EC2::SecurityGroup"
+        },
+        "RootRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "ec2.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "root",
+                        "PolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": "*",
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "RootInstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [
+                    {
+                        "Ref": "RootRole"
+                    }
+                ]
+            }
+        },
+        "WaitCondition": {
+            "Type": "AWS::CloudFormation::WaitCondition",
+            "Properties": {
+                "Handle": {
+                    "Ref": "WaitHandle"
+                },
+                "Timeout": "1800"
+            }
+        },
+        "WaitHandle": {
+            "Type": "AWS::CloudFormation::WaitConditionHandle"
+        }
+    }
+}
