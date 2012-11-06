@@ -5,6 +5,7 @@ require_once __DIR__.'/dbhelper.php';
 require_once __DIR__.'/vendor/inori/twitteroauth/twitteroauth/TwitterOAuth.php';
 session_start();
 
+
 if(empty($_GET['oauth_token'])){
 	/* Build TwitterOAuth object with client credentials. */
 	$connection = new TwitterOAuth($twitterConsumerKey, $twitterConsumerSecret);

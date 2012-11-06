@@ -19,8 +19,8 @@ class DBHelper {
 	function __construct() {
 		global $aws_access_key, $aws_secret_key, $redis_server, $redis_port;
 		$this->dynamodb = new AmazonDynamoDB(array(
-				'key' => $aws_access_key,
-				'secret' => $aws_secret_key
+				'key' => getenv('AWS_ACCESS_KEY'),
+                		'secret' => getenv('AWS_SECRET_KEY')
 		));
 		//$this->dynamodb->set_region(AmazonDynamoDB::REGION_APAC_NE1);
 		$this->rediska = new Rediska(array(
