@@ -9,7 +9,7 @@ $dynamodb = new AmazonDynamoDB(array(
 		'key' => getenv('AWS_ACCESS_KEY'),
 		'secret' => getenv('AWS_SECRET_KEY'),
 		));
-$dynamodb->set_region(getenv('AWS_REGION'));
+$dynamodb->set_region('dynamodb.'.getenv('AWS_REGION').'.amazonaws.com');
 
 ####################################################################
 # Setup some local variables for dates
