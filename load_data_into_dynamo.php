@@ -20,10 +20,6 @@ $fourteen_days_ago = date('Y-m-d H:i:s', strtotime("-14 days"));
 $twenty_one_days_ago = date('Y-m-d H:i:s', strtotime("-21 days"));
  
 ####################################################################
-# Adding data to the table
-     
-echo PHP_EOL . PHP_EOL;
-echo "# Adding data to the table..." . PHP_EOL;
 
 // Set up batch requests
 $queue = new CFBatchRequest();
