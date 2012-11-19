@@ -16,6 +16,7 @@ var redis_port = config.redis_port;
 
 
 var dynamodb = new dynode.Client({
+	'region': config.aws_region,
 	'accessKeyId': config.aws_access_key,
 	'secretAccessKey': config.aws_secret_key
 });
