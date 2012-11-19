@@ -25,9 +25,6 @@ $twenty_one_days_ago = date('Y-m-d H:i:s', strtotime("-21 days"));
 echo PHP_EOL . PHP_EOL;
 echo "# Adding data to the table..." . PHP_EOL;
 
-# Adding data to the table
-echo "# Adding data to the table..." . PHP_EOL;
-
 // Set up batch requests
 $queue = new CFBatchRequest();
 $queue->use_credentials($dynamodb->credentials);
@@ -218,10 +215,11 @@ $responses = $dynamodb->batch($queue)->send();
 // Check for success...
 if ($responses->areOK())
 {
-    echo "The data has been added to the table." . PHP_EOL;
+    echo "The data has been successfully added to the table." . PHP_EOL;
 }
     else
 {
+    echo "Error: Failed to load data." . PHP_EOL;
     print_r($responses);
 }
 ?>

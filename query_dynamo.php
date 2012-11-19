@@ -28,8 +28,9 @@ $response = $dynamodb->query(array(
     )
 ));
 
+header('content-type: text/plain');
 // Response code 200 indicates success
-	print_r($response);
+print_r($response);
 	
 ?>
 
