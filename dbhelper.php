@@ -22,7 +22,7 @@ class DBHelper {
 				'key' => getenv('AWS_ACCESS_KEY'),
                 		'secret' => getenv('AWS_SECRET_KEY')
 		));
-		//$this->dynamodb->set_region(AmazonDynamoDB::REGION_APAC_NE1);
+		$this->dynamodb->set_region(getenv('AWS_REGION'));
 		$this->rediska = new Rediska(array(
                                         'servers'   => array(
                                         array('host' => $redis_server, 'port' => $redis_port)

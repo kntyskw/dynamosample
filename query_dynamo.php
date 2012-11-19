@@ -9,6 +9,7 @@ $dynamodb = new AmazonDynamoDB(array(
                 'key' => getenv('AWS_ACCESS_KEY'),
                 'secret' => getenv('AWS_SECRET_KEY'),
                 ));
+$dynamodb->set_region(getenv('AWS_REGION'));
 
 $fourteen_days_ago = date('Y-m-d H:i:s', strtotime("-14 days"));
 	
