@@ -1,0 +1,14 @@
+{
+	"name": "dynamosample",
+	"version": "0.0.2",
+	"private": true,
+	"dependencies": {
+		"socket.io": "",
+		"dynode": "",
+		"oauth": "",
+		"request": "",
+		"sprintf": "",
+		"redis": ""
+	}
+
+}
