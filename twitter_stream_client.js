@@ -55,7 +55,7 @@ TwitterStreamClient.prototype.start = function(){
 					var feed = normalizeTwitterFeed(msg);
 					if(feed.id){
 						if(client.count++ % client.mod == 0){
-							callback(client.user, feed);
+							client.callback(client.user, feed);
 							client.count = 1;
 						}
 					}

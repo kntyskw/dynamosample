@@ -6,6 +6,11 @@ config.aws_access_key = "AWS_ACCESS_KEY";
 config.aws_secret_key = "AWS_SECRET_KEY";
 config.redis_host = "localhost";
 config.redis_port = 6379;
+
+config.user_feeds_table='UserFeedsTable';
+config.feeds_table='FeedsTable';
+config.user_data_table='UserDataTable';
+
 config.twitter_stream_client = "./dummy_twitter_stream_client";
 // Change this as follows if you want to receive real twitter stream and edit credentials
 //config.twitter_stream_client = "./twitter_stream_client";

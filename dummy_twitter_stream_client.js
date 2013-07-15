@@ -117,7 +117,7 @@ function compareTweets(t1, t2){
 function normalizeTwitterFeed(tweet){
 	var normalized = {
 		'id': tweet.tweetID,
-		'time': tweet.tweetEpochDate,
+		'time': parseInt(tweet.tweetEpochDate),
 		'message': tweet.tweetText,
 		'sns': 'twitter',
 		'from': tweet.tweetFromUser
