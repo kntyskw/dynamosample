@@ -1,4 +1,3 @@
-var chunkId = 1;
 var tweetSource = "https://s3.amazonaws.com/self-paced-lab-05";
 var zlib = require('zlib');
 var sprintf = require('sprintf').sprintf;
@@ -7,6 +6,11 @@ var TwitterStreamClient = function(user, url, callback){
 	this.user = user;
 	this.url = url;
 	this.callback = callback;
+	this.init();
+}
+
+TwitterStreamClient.prototype.init = function(rate){
+	this.chunkId = 1;
 	this.mod = 1;
 	this.count = 0;
 	this.loading = false;
@@ -14,6 +18,7 @@ var TwitterStreamClient = function(user, url, callback){
 	this.tweets = [];
 	this.running = false;
 }
+
 TwitterStreamClient.prototype.start = function(){
 	this.running = true;
 	var client = this;
@@ -41,7 +46,7 @@ TwitterStreamClient.prototype.emitTweet = function(tweet){
 TwitterStreamClient.prototype.scheduleNext = function(tweet){
 	var next = this.tweets.shift();
 	if(next != null){
-		var timeToNext = (next.tweetEpochDate - tweet.tweetEpochDate) * 1000 / 2;
+		var timeToNext = (next.tweetEpochDate - tweet.tweetEpochDate) * 1000 / 4;
 		if(timeToNext <= 0){
 			console.log("WARN: Time to next is 0 or negative: " + timeToNext);
 			timeToNext = 5;	
@@ -71,6 +76,8 @@ TwitterStreamClient.prototype.setRate = function(rate){
 	}
 }
 
+
+
 TwitterStreamClient.prototype.loadChunk = function(onsuccess, onerror){
 	if(this.loading){
 		console.log("Already loading. Be patient");
@@ -82,7 +89,7 @@ TwitterStreamClient.prototype.loadChunk = function(onsuccess, onerror){
 	var client = this;
 
 	var extension = ".gz";
-	var url = sprintf("%s/%03d_tweets%s", tweetSource, chunkId, extension);
+	var url = sprintf("%s/%03d_tweets%s", tweetSource, this.chunkId, extension);
 
 	console.log(url);
 	var gunzip = zlib.createGunzip();
@@ -96,7 +103,7 @@ TwitterStreamClient.prototype.loadChunk = function(onsuccess, onerror){
     	tweets = JSON.parse(json);			
     	tweets.sort(compareTweets);
         client.tweets = client.tweets.concat(tweets);
-		chunkId++;
+		client.chunkId++;
 		client.loading = false;
 		if(onsuccess)onsuccess.call(client);
     });

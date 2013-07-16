@@ -11,12 +11,7 @@ var TwitterStreamClient = function(user, url, callback){
 	this.user = user;
 	this.url = url;
 	this.callback = callback;
-	this.access_token = config.twitter_access_token;
-	this.access_token_secret = config.twitter_access_token_secret;
-	this.mod = 1;
-	this.count = 0;
-	this.streamHandler = null;
-	
+
 	var consumer_key = config.twitter_consumer_key;
 	var consumer_secret = config.twitter_consumer_secret;
 
@@ -26,6 +21,15 @@ var TwitterStreamClient = function(user, url, callback){
                  consumer_key, consumer_secret, 
                  "1.0A", "http://localhost:3000/oauth/callback", "HMAC-SHA1");
 }
+
+TwitterStreamClient.prototype.init = function(){
+	this.access_token = config.twitter_access_token;
+	this.access_token_secret = config.twitter_access_token_secret;
+	this.mod = 1;
+	this.count = 0;
+	this.streamHandler = null;
+}
+
 TwitterStreamClient.prototype.start = function(){
 	if(this.streamHandler != null) return ;
 	var client = this;

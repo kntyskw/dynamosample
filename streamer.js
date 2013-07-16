@@ -35,6 +35,8 @@ io.sockets.on('connection', function(socket){
 		socket.subscriber.on("message", function(channel, message) {
 			socket.emit('feed', JSON.parse(message));
 		});
+		var client = getClient(userId);
+		client.init.call(client);
 	});
 	socket.on('setPubStreamRate', function (args){
 		console.log('setting pubstream rate for user' + args.user);
@@ -42,7 +44,7 @@ io.sockets.on('connection', function(socket){
 			console.error("Invalid args: " + args);
 			return;
 		}
-		var client = getClient(args.user)
+		var client = getClient(args.user);
 		client.setRate.call(client, args.rate);
 	});
 	socket.on('disconnect', function(){
@@ -50,7 +52,6 @@ io.sockets.on('connection', function(socket){
 			socket.subscriber.unsubscribe();
 			socket.subscriber.end();
 		}
-		
 	});
 });
 

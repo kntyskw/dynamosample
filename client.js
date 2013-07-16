@@ -8,7 +8,7 @@ function init(){
 	
 	var connection = new WSServerConnection(myUserId, myWsUrl);
 	
-	$('#pubStreamRatio').val(5);
+	$('#pubStreamRatio').val(20);
 
 	$('#pubStreamRatio').on("stop", function(event, ui){
 		connection.setPublicStreamRate.call(connection, $(this).val());
