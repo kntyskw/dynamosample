@@ -2,7 +2,7 @@
 
 require_once __DIR__.'/common.inc.php';
 require_once __DIR__.'/dbhelper.php';
-require_once __DIR__.'/vendor/abraham/twitteroauth/twitteroauth/twitteroauth.php';
+require_once __DIR__.'/vendor/ruudk/twitteroauth/twitteroauth/twitteroauth.php';
 session_start();
 
 
